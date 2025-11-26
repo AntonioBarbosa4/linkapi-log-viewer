@@ -1,14 +1,15 @@
 const path = require('path');
 const webpack = require('webpack');
-const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const { VueLoaderPlugin } = require('vue-loader');
 
 module.exports = {
-  mode: 'none',
+  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   entry: './app/js/index.js',
   output: {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/dist/',
-    filename: 'build.js'
+    filename: 'build.js',
+    clean: true
   },
   resolve: {
     extensions: ['.js', '.vue'],
@@ -21,26 +22,23 @@ module.exports = {
     rules: [
       {
         test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          loaders: {
-          }
-        }
+        loader: 'vue-loader'
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
-        loader: 'file-loader',
-        options: {
-          objectAssign: 'Object.assign'
+        exclude: /node_modules/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'images/[hash][ext][query]'
         }
       },
       {
-        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-        loader: 'url-loader'
+        test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
+        type: 'asset/inline'
       },
       {
         test: /\.css$/,
-        loader: ['style-loader', 'css-loader']
+        use: ['style-loader', 'css-loader']
       }
     ]
   },
@@ -48,11 +46,10 @@ module.exports = {
     new VueLoaderPlugin()
   ],
   devServer: {
-    historyApiFallback: true,
-    noInfo: true
+    historyApiFallback: true
   },
   performance: {
     hints: false
   },
-  devtool: '#eval-source-map'
+  devtool: process.env.NODE_ENV === 'production' ? 'source-map' : 'eval-source-map'
 };

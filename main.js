@@ -1,12 +1,48 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const { program } = require('commander');
 const path = require('path');
+
+// electron-store will be loaded dynamically (it's ESM only)
+let store;
+
+// Load electron-store dynamically
+async function initializeStore() {
+  const Store = (await import('electron-store')).default;
+  store = new Store();
+}
 
 if (process.env.NODE_ENV === 'development') {
 	  require('electron-reload')(__dirname, {
     electron: path.join(__dirname, 'node_modules', '.bin', 'electron')
   });
 }
+
+// IPC handlers for storage
+ipcMain.handle('store-get', async (event, key, defaultValue) => {
+  if (!store) await initializeStore();
+  return store.get(key, defaultValue);
+});
+
+ipcMain.handle('store-set', async (event, key, value) => {
+  if (!store) await initializeStore();
+  store.set(key, value);
+});
+
+ipcMain.handle('store-delete', async (event, key) => {
+  if (!store) await initializeStore();
+  store.delete(key);
+});
+
+ipcMain.handle('store-clear', async () => {
+  if (!store) await initializeStore();
+  store.clear();
+});
+
+// IPC handler for file dialog
+ipcMain.handle('dialog-open-file', async (event, options) => {
+  const result = await dialog.showOpenDialog(options);
+  return result;
+});
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -19,7 +55,10 @@ function createWindow() {
     width: 1024,
     height: 768,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: false
     }
   });
 
@@ -56,8 +95,6 @@ app.on('window-all-closed', () => {
     app.quit();
   }
 });
-
-app.allowRendererProcessReuse = true;
 
 function parseArguments() {
   program
