@@ -12,7 +12,7 @@ module.exports = class OpenNewFileCommand {
     this.userPreferences = userPreferences;
   }
 
-  execute() {
+  async execute() {
     if (fs.existsSync(this.file)) {
       const filePath = path.resolve(this.file);
       const parsedFile = path.parse(filePath);
@@ -22,7 +22,7 @@ module.exports = class OpenNewFileCommand {
 
       this.tabs.push(tab);
 
-      this.userPreferences.addFile(parsedFile.base, filePath, fileSettings);
+      await this.userPreferences.addFile(parsedFile.base, filePath, fileSettings);
     } else {
       throw new FileNotFoundError(this.file);
     }

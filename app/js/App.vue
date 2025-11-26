@@ -93,7 +93,6 @@
 
 <script>
 	const Tab = require("./tab");
-	const remote = window.electron.remote;
 	const fs = window.node.fs;
 	const FileSettings = require("./fileSettings");
 	const UserPreferences = require("./userPreferences");
@@ -119,25 +118,28 @@
 				messageDialogMessage: ''
 			}
 		},
-		mounted: function() {
+		async mounted() {
 			this.$vuetify.theme.dark = true
-			userPreferences.getFiles().forEach(file => {
+			const files = await userPreferences.getFiles();
+
+			for (const file of files) {
 				if (fs.existsSync(file.path)) {
 					let tab = new Tab(file.name, file.path, FileSettings.createFromSettings(file.settings));
 
 					this.tabs.push(tab);
 				}
 				else {
-					userPreferences.removeFile(file.path);
+					await userPreferences.removeFile(file.path);
 				}
-			});
+			}
 
-			if (remote.getGlobal('arguments').file) {
-				const file = remote.getGlobal('arguments').file;
+			const args = window.electron.getGlobal('arguments');
+			if (args && args.file) {
+				const file = args.file;
 				try {
-					new OpenNewFileCommand(
-						file, 
-						this.tabs, 
+					await new OpenNewFileCommand(
+						file,
+						this.tabs,
 						userPreferences
 					)
 					.execute();
@@ -146,7 +148,7 @@
 					this.showFileNotFoundMessageDialog(file);
 				}
 			}
-			
+
 			if (this.tabs.length === 0) {
 				this.tabs.push(new Tab(this.$t("new-file")));
 			}
@@ -157,25 +159,27 @@
 					this.tabs.push(new Tab(this.$t("new-file")));
 				}
 			},
-			closeTab(index) {
-				userPreferences.removeFile(this.tabs[index].filePath);
+			async closeTab(index) {
+				await userPreferences.removeFile(this.tabs[index].filePath);
 
 				this.tabs.splice(index, 1);
 			},
 			showCloseButton() {
 				return this.tabs.length > 1
 			},
-			onFileChanged(event, tab) {
+			async onFileChanged(event, tab) {
 				if (event.target.files.length > 0) {
-					const selectedFileName = event.target.files[0].name;
-					const selectedFilePath = event.target.files[0].path;
+					const file = event.target.files[0];
+					const selectedFileName = file.name;
+					const selectedFilePath = file.path;
 					const fileSettings = new FileSettings();
 
-					tab.setFileName(selectedFileName);
-					tab.setFilePath(selectedFilePath);
-					tab.setFileSettings(fileSettings);
+					// Use Vue.set to ensure reactivity
+					this.$set(tab, 'fileName', selectedFileName);
+					this.$set(tab, 'filePath', selectedFilePath);
+					this.$set(tab, 'fileSettings', fileSettings);
 
-					userPreferences.addFile(selectedFileName, selectedFilePath, fileSettings);
+					await userPreferences.addFile(selectedFileName, selectedFilePath, fileSettings);
 				}
 			},
 			fileNotFoundErrorHandler(event) {

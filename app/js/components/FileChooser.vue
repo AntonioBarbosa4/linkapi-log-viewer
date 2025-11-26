@@ -56,8 +56,31 @@
 			onFileChanged(event) {
 				this.$emit('change', event);
 			},
-			openFileChooser() {
-				this.$refs.fileChooser.click();
+			async openFileChooser() {
+				// Use Electron dialog instead of HTML file input to get full path
+				const result = await window.dialog.openFile({
+					properties: ['openFile'],
+					filters: [
+						{ name: 'Log Files', extensions: ['log'] }
+					]
+				});
+
+				if (!result.canceled && result.filePaths.length > 0) {
+					const filePath = result.filePaths[0];
+					const fileName = window.node.path.basename(filePath);
+
+					// Create a fake event object to maintain compatibility
+					const fakeEvent = {
+						target: {
+							files: [{
+								name: fileName,
+								path: filePath
+							}]
+						}
+					};
+
+					this.$emit('change', fakeEvent);
+				}
 			}
 		}
 	}

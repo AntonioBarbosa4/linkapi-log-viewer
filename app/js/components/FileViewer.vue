@@ -131,6 +131,11 @@ export default {
     };
   },
   watch: {
+    file(newFile, oldFile) {
+      if (newFile && newFile !== oldFile) {
+        this.startReader();
+      }
+    },
     filter: {
       deep: true,
       handler(value) {
@@ -169,7 +174,9 @@ export default {
   mounted: function() {
     window.addEventListener("resize", this.handleResize);
 
-    this.startReader();
+    if (this.file) {
+      this.startReader();
+    }
   },
   beforeDestroy: function() {
     window.removeEventListener("resize", this.handleResize);
@@ -189,9 +196,8 @@ export default {
     async startReader() {
       try {
         this.loading = true;
-        console.time('reader')
         this.reader = new LogFile(this.file, 1000);
-  
+
         const { success, data, code } = await this.reader.start();
         if(!success) {
           if(code === 'ext') {
@@ -201,11 +207,11 @@ export default {
         }
         this.logs = data;
         this.logsSort = data;
-        
+
       } catch (error) {
+        console.error('[FileViewer] Error reading file:', error);
         this.$emit('errorHandler', { message: this.$i18n.t("error", {stack: error}) })
       } finally {
-        console.timeEnd('reader')
         this.loading = false;
       }
     },

@@ -1,6 +1,6 @@
 {
   "name": "linkapi-log-viewer",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "Jackson Silva Rodrigues <jackson.rodrigues@linkapi.com.br> (https://www.linkedin.com/in/jacksonsilvadev/)",
   "contributors": [
     {
@@ -77,8 +77,20 @@
     },
     "linux": {
       "target": [
-        "rpm",
-        "deb"
+        {
+          "target": "deb",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "rpm",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
       ],
       "desktop": {
         "Type": "Application",
@@ -88,41 +100,59 @@
         "Categories": "Utility;"
       }
     },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ]
+    },
     "win": {
-      "target": "portable"
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
     }
   },
   "dependencies": {
-    "commander": "^6.2.1",
-    "date-fns": "^2.21.3",
-    "date-fns-tz": "^1.1.4",
-    "electron-store": "^5.2.0",
-    "lodash": "^4.17.15",
-    "typeface-roboto": "^0.0.75",
+    "commander": "^12.1.0",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "electron-store": "^10.0.0",
+    "lodash": "^4.17.21",
+    "typeface-roboto": "^1.1.13",
     "vue": "^2.7.16",
     "vue-i18n": "^8.28.2",
     "vue-json-viewer": "^2.2.18",
-    "vuetify": "^2.4.11"
+    "vuetify": "^2.7.2"
   },
   "devDependencies": {
-    "@commitlint/cli": "^12.1.4",
-    "@commitlint/config-conventional": "^12.1.4",
-    "@mdi/font": "^5.9.55",
-    "cross-env": "7.0.2",
-    "css-loader": "3.4.2",
-    "electron": "^8.1.1",
-    "electron-builder": "^22.4.1",
-    "electron-reload": "^1.5.0",
-    "eslint": "^7.26.0",
-    "eslint-plugin-vue": "^7.9.0",
+    "@commitlint/cli": "^19.6.0",
+    "@commitlint/config-conventional": "^19.6.0",
+    "@mdi/font": "^7.4.47",
+    "cross-env": "^7.0.3",
+    "css-loader": "^7.1.2",
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "electron-reload": "^2.0.0-alpha.1",
+    "eslint": "^8.57.1",
+    "eslint-plugin-vue": "^9.29.1",
     "file-loader": "^6.2.0",
-    "husky": "^6.0.0",
-    "lint-staged": "^10.5.4",
-    "style-loader": "^1.3.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.10",
+    "style-loader": "^4.0.0",
     "url-loader": "^4.1.1",
     "vue-loader": "^15.11.1",
     "vue-template-compiler": "^2.7.16",
-    "webpack": "^4.47.0",
-    "webpack-cli": "^4.7.0"
+    "webpack": "^5.96.1",
+    "webpack-cli": "^5.1.4"
   }
 }
