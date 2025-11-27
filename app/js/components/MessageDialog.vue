@@ -20,7 +20,7 @@
 
         <v-btn
           color="primary"
-          text
+          variant="text"
           @click="close"
         >
           OK

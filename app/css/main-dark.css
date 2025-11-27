@@ -1,35 +1,82 @@
-.theme--dark .v-application--wrap {
-  background-color: #1E1E1E;
+.v-theme--dark .v-application {
+  background-color: #1E1E1E !important;
 }
 
-.theme--dark.v-toolbar.v-sheet {
-  background-color: #1E1E1E;
-  border-color: #1E1E1E;
+.v-theme--dark .v-main {
+  background-color: #1E1E1E !important;
+}
+
+.v-theme--dark .v-window,
+.v-theme--dark .v-window-item {
+  background-color: #1E1E1E !important;
+}
+
+.v-theme--dark .tabs-header-wrapper {
+  background-color: #1E1E1E !important;
+}
+
+.v-theme--dark .v-toolbar {
+  background-color: #1E1E1E !important;
+  border-color: #1E1E1E !important;
   color: #FFFFFF;
 }
 
-.theme--dark .log-table th {
+.v-theme--dark .log-table th {
   font-weight: 800;
   color: #fff !important;
   font-size: 0.90rem !important;
 }
 
-.theme--dark.v-navigation-drawer {
-  background-color: #1E1E1E;
+.v-theme--dark .v-navigation-drawer {
+  background-color: #1E1E1E !important;
 }
 
-.theme--dark .jv-code{
-  background-color: #1E1E1E
+.v-theme--dark .logger-viewer .v-card,
+.v-theme--dark .logger-viewer .v-card-text,
+.v-theme--dark .logger-viewer .v-row,
+.v-theme--dark .logger-viewer .v-col,
+.v-theme--dark .logger-viewer .v-timeline,
+.v-theme--dark .logger-viewer .v-timeline-item,
+.v-theme--dark .logger-viewer .v-timeline-item__body {
+  background-color: transparent !important;
 }
 
-.theme--dark .jv-key, .theme--dark .jv-item.jv-object, .theme--dark .jv-item.jv-array {
+.v-theme--dark .jv-code{
+  background-color: #1E1E1E !important;
+}
+
+.v-theme--dark .jv-key, .v-theme--dark .jv-item.jv-object, .v-theme--dark .jv-item.jv-array {
   color: #fff !important;
 }
 
-.theme--dark .jv-container.jv-light {
-  font-size: 12px;
+.v-theme--dark .jv-container.jv-light {
+  font-size: 14px;
 }
 
-.theme--dark .refresh-icon {
+.v-theme--dark .jv-code {
+  font-size: 14px !important;
+  font-family: 'Roboto', sans-serif !important;
+}
+
+.v-theme--dark .jv-container {
+  font-family: 'Roboto', sans-serif !important;
+}
+
+/* Remove fundo branco do json-viewer em modo boxed */
+.v-theme--dark .json-viewer,
+.v-theme--dark .json-viewer .jv-container,
+.v-theme--dark .json-viewer .jv-code,
+.v-theme--dark .jv-container,
+.v-theme--dark .jv-code.boxed {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.v-theme--dark .logger-viewer .json-viewer .jv-code.boxed {
+  background: transparent !important;
+}
+
+.v-theme--dark .refresh-icon {
   color: #fff !important;
 }

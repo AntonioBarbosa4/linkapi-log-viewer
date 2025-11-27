@@ -2,11 +2,34 @@ html {
     overflow: hidden;
 }
 
-.v-tabs__div {
-    text-transform: none;
-    width: 200px;
+body {
+    font-family: 'Roboto', sans-serif !important;
+    margin: 0;
+    padding: 0;
 }
 
-.v-tabs__item--active {
-    background-color: #fafafa;
+.v-application {
+    font-family: 'Roboto', sans-serif !important;
+}
+
+.v-application *,
+.v-application .v-btn,
+.v-application .v-tab,
+.v-application .v-toolbar,
+.v-application .v-card,
+.v-application .v-data-table,
+.v-application input,
+.v-application textarea,
+.v-application select {
+    font-family: 'Roboto', sans-serif !important;
+}
+
+/* Light theme active tab */
+.v-theme--light .v-tab--selected {
+    background-color: #fafafa !important;
+}
+
+/* Dark theme active tab */
+.v-theme--dark .v-tab--selected {
+    background-color: rgba(255, 255, 255, 0.08) !important;
 }

@@ -1,3 +1,52 @@
+/* Clear icon styling - remove outline and set green color */
+.v-field__clearable {
+  border: none !important;
+  outline: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+.v-field__clearable .v-icon {
+  color: #3CC896 !important;
+  opacity: 1 !important;
+}
+
+/* Remove background circle from clear button */
+.v-field__clearable .v-btn {
+  background: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.v-field__clearable .v-btn__overlay,
+.v-field__clearable .v-btn__underlay {
+  display: none !important;
+}
+
+.v-input__append .v-icon {
+  color: #3CC896 !important;
+}
+
+/* Also for v-select clear icon */
+.v-select .v-field__append-inner .v-btn {
+  background: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.v-select .v-field__append-inner .v-btn .v-icon {
+  color: #3CC896 !important;
+}
+
+/* Checkbox styling - green when checked */
+.v-checkbox .v-selection-control__input:not(.v-selection-control__input--indeterminate) .v-icon {
+  color: #3CC896 !important;
+}
+
+.v-checkbox .v-selection-control--dirty .v-selection-control__input .v-icon {
+  color: #3CC896 !important;
+}
+
 .sidebar-gradient {
   background: linear-gradient(45deg,#44d289,#1fdcbd) no-repeat;
   border-radius: unset;

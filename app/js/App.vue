@@ -1,66 +1,67 @@
 <template>
   <v-app id="drag-and-drop-zone">
-    <v-tabs
-      v-model="currentTab"
-      show-arrows
-      hide-slider
-    >
-      <v-tab
-        v-for="(tab, i) in tabs"
-        :key="tab.id"
-        :title="tab.filePath"
-        :href="'#tab' + tab.id"
+    <div class="tabs-header-wrapper">
+      <v-tabs
+        v-model="currentTab"
+        show-arrows
+        class="tabs-main"
       >
-        {{ tab.fileName }}
-
-        <v-btn
-          v-show="showCloseButton()"
-          text
-          icon
-          @click.stop.prevent="closeTab(i)"
+        <v-tab
+          v-for="(tab, i) in tabs"
+          :key="tab.id"
+          :title="tab.filePath"
+          :value="'tab' + tab.id"
         >
-          <v-icon small>
-            mdi-close
+          <span class="tab-text">{{ tab.fileName }}</span>
+
+          <v-btn
+            v-show="showCloseButton()"
+            variant="text"
+            icon
+            size="x-small"
+            class="close-btn"
+            @click.stop.prevent="closeTab(i)"
+          >
+            <v-icon size="x-small">
+              mdi-close
+            </v-icon>
+          </v-btn>
+        </v-tab>
+      </v-tabs>
+
+      <div class="tabs-actions">
+        <v-btn
+          v-if="this.tabs.length < 5"
+          variant="text"
+          icon
+          size="small"
+          class="add-btn"
+          @click="newTab"
+        >
+          <v-icon size="small">
+            mdi-plus
           </v-icon>
         </v-btn>
-      </v-tab>
 
-      <v-btn
-        v-if="this.tabs.length < 5"
-        text
-        icon
-        @click="newTab"
-      >
-        <v-icon small>
-          mdi-plus
-        </v-icon>
-      </v-btn>
-      <v-spacer />
-      <v-switch
-        v-model="$vuetify.theme.dark"
-        class="switch-theme"
-        hide-details
-        small
-      >
-        <template #label>
-          <v-icon
-            v-if="$vuetify.theme.dark"
-            small
-          >
-            mdi-theme-light-dark
-          </v-icon>
-          <v-icon
-            v-else
-            small
-          >
-            mdi-theme-light-dark
-          </v-icon>
-        </template>
-      </v-switch>
-    </v-tabs>
+        <v-switch
+          v-model="isDark"
+          class="switch-theme"
+          color="primary"
+          hide-details
+          density="compact"
+          @update:model-value="toggleTheme"
+        >
+          <template #label>
+            <v-icon size="small">
+              mdi-theme-light-dark
+            </v-icon>
+          </template>
+        </v-switch>
+      </div>
+    </div>
 
-    <v-tabs-items v-model="currentTab">
-      <v-tab-item
+    <v-window v-model="currentTab">
+      <v-window-item
         v-for="tab in tabs"
         :key="tab.id"
         :value="'tab' + tab.id"
@@ -69,22 +70,22 @@
           v-if="!tab.filePath"
           @change="onFileChanged($event, tab)"
         />
-		
-        <file-viewer 
-          v-if="tab.filePath" 
-          ref="fileViewer" 
-          :file="tab.filePath" 
+
+        <file-viewer
+          v-if="tab.filePath"
+          ref="fileViewer"
+          :file="tab.filePath"
           :file-settings="tab.fileSettings"
           @fileNotFoundError="fileNotFoundErrorHandler"
           @errorHandler="errorMessage"
         />
-      </v-tab-item>
-    </v-tabs-items>
+      </v-window-item>
+    </v-window>
 
-    <message-dialog 
-      :show="showMessageDialog" 
-      :severity="'error'" 
-      :title="messageDialogTitle" 
+    <message-dialog
+      :show="showMessageDialog"
+      :severity="'error'"
+      :title="messageDialogTitle"
       :message="messageDialogMessage"
       @close="closeMessageDialog"
     />
@@ -105,8 +106,8 @@
 
 	export default {
 		components: {
-			FileChooser, 
-			FileViewer, 
+			FileChooser,
+			FileViewer,
 			MessageDialog
 		},
 		data() {
@@ -115,11 +116,12 @@
 				currentTab: null,
 				showMessageDialog: false,
 				messageDialogTitle: '',
-				messageDialogMessage: ''
+				messageDialogMessage: '',
+				isDark: true
 			}
 		},
 		async mounted() {
-			this.$vuetify.theme.dark = true
+			this.$vuetify.theme.global.name = 'dark';
 			const files = await userPreferences.getFiles();
 
 			for (const file of files) {
@@ -152,17 +154,35 @@
 			if (this.tabs.length === 0) {
 				this.tabs.push(new Tab(this.$t("new-file")));
 			}
+
+			// Ativa automaticamente a primeira aba
+			if (this.tabs.length > 0) {
+				this.currentTab = 'tab' + this.tabs[0].id;
+			}
 		},
 		methods: {
+			toggleTheme() {
+				this.$vuetify.theme.global.name = this.isDark ? 'dark' : 'light';
+			},
 			newTab() {
 				if(this.tabs.length < 5) {
-					this.tabs.push(new Tab(this.$t("new-file")));
+					const newTab = new Tab(this.$t("new-file"));
+					this.tabs.push(newTab);
+					// Ativa automaticamente a nova aba
+					this.currentTab = 'tab' + newTab.id;
 				}
 			},
 			async closeTab(index) {
 				await userPreferences.removeFile(this.tabs[index].filePath);
 
 				this.tabs.splice(index, 1);
+
+				// Ativa automaticamente outra aba após fechar
+				if (this.tabs.length > 0) {
+					// Se fechou a última aba, ativa a nova última
+					const newIndex = index >= this.tabs.length ? this.tabs.length - 1 : index;
+					this.currentTab = 'tab' + this.tabs[newIndex].id;
+				}
 			},
 			showCloseButton() {
 				return this.tabs.length > 1
@@ -174,12 +194,15 @@
 					const selectedFilePath = file.path;
 					const fileSettings = new FileSettings();
 
-					// Use Vue.set to ensure reactivity
-					this.$set(tab, 'fileName', selectedFileName);
-					this.$set(tab, 'filePath', selectedFilePath);
-					this.$set(tab, 'fileSettings', fileSettings);
+					// Vue 3 reactivity works without $set
+					tab.fileName = selectedFileName;
+					tab.filePath = selectedFilePath;
+					tab.fileSettings = fileSettings;
 
 					await userPreferences.addFile(selectedFileName, selectedFilePath, fileSettings);
+
+					// Garante que a aba está ativa após selecionar arquivo
+					this.currentTab = 'tab' + tab.id;
 				}
 			},
 			fileNotFoundErrorHandler(event) {
@@ -187,34 +210,85 @@
 			},
 			showFileNotFoundMessageDialog(file) {
 				this.showMessageDialog = true;
-				this.messageDialogTitle = this.$i18n.t("warning");
-				this.messageDialogMessage = this.$i18n.t("file-no-exists", {filename: file});
+				this.messageDialogTitle = this.$t("warning");
+				this.messageDialogMessage = this.$t("file-no-exists", {filename: file});
 			},
 			closeMessageDialog() {
 				this.showMessageDialog = false;
 			},
 			errorMessage(event) {
 				this.showMessageDialog = true;
-				this.messageDialogTitle = this.$i18n.t("warning");
-				this.messageDialogMessage = event.message 
+				this.messageDialogTitle = this.$t("warning");
+				this.messageDialogMessage = event.message
 			}
 		}
 	}
 </script>
 
 <style>
-.v-tabs  {
-	flex: none;	
-}
-
-.v-tabs-bar__content {
+.tabs-header-wrapper {
 	display: flex;
 	align-items: center;
+	width: 100%;
+	border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+	background-color: inherit;
+}
+
+.tabs-main {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.tabs-actions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 0 12px;
+	flex: 0 0 auto;
+	height: 48px;
+}
+
+.v-tab {
+	text-transform: uppercase !important;
+	min-width: 90px;
+	max-width: 250px;
+}
+
+.tab-text {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	max-width: 180px;
+	display: inline-block;
+}
+
+.close-btn {
+	margin-left: 4px !important;
+	opacity: 0.7;
+}
+
+.close-btn:hover {
+	opacity: 1;
+}
+
+.add-btn {
+	flex-shrink: 0;
 }
 
 .switch-theme {
-	margin-top: 0;
-	padding-top: 0;
-	margin-right: 15px;
+	margin: 0 !important;
+	padding: 0 !important;
+	flex-shrink: 0;
+}
+
+/* Remove extra padding/margin from v-window */
+.v-window {
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+.v-window-item {
+	margin: 0 !important;
+	padding: 0 !important;
 }
 </style>
