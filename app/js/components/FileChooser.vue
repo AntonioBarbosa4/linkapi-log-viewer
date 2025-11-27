@@ -1,33 +1,35 @@
 <template>
   <v-container
-    class="file-chooser-container"
-    fill-height
+    class="file-chooser-container fill-height"
   >
-    <v-layout
-      align-center
-      justify-center
-      column
-      fill-height
+    <v-row
+      align="center"
+      justify="center"
+      class="fill-height flex-column"
     >
-      <input
-        ref="fileChooser"
-        type="file"
-        accept=".log"
-        class="file-chooser"
-        @change="onFileChanged"
-      >
-      <img
-        class="log-file-format py-2"
-        src="images/log-file.png"
-      >
-      <v-btn
-        large
-        color="primary"
-        @click="openFileChooser"
-      >
-        {{ $t("choose-file") }}
-      </v-btn>
-    </v-layout>
+      <v-col cols="auto">
+        <input
+          ref="fileChooser"
+          type="file"
+          accept=".log"
+          class="file-chooser"
+          @change="onFileChanged"
+        >
+        <img
+          class="log-file-format py-2"
+          src="images/log-file.png"
+        >
+      </v-col>
+      <v-col cols="auto">
+        <v-btn
+          size="large"
+          color="primary"
+          @click="openFileChooser"
+        >
+          {{ $t("choose-file") }}
+        </v-btn>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 

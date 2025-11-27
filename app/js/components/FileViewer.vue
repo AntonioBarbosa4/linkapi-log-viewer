@@ -8,6 +8,7 @@
           label="UniqueKey"
           clearable
           hide-details
+          color="primary"
         />
       </v-col>
       <v-col cols="2">
@@ -15,6 +16,7 @@
           v-model="filter.partial"
           hide-details
           label="Partial"
+          color="primary"
         />
       </v-col>
       <v-col cols="4">
@@ -31,20 +33,21 @@
           hide-details
           clearable
           label="Status"
+          color="primary"
         />
       </v-col>
       <v-spacer />
 
       <v-btn
         :disabled="loadingRefresh"
-        text
+        variant="text"
         icon
         :loading="loading"
-        color="grey darken-1"
+        color="grey-darken-1"
         @click="settingsButtonClicked"
       >
         <v-icon
-          style="font-size: 24px"
+          size="24"
           class="refresh-icon"
         >
           mdi-refresh
@@ -178,7 +181,7 @@ export default {
       this.startReader();
     }
   },
-  beforeDestroy: function() {
+  beforeUnmount: function() {
     window.removeEventListener("resize", this.handleResize);
   },
   methods: {
